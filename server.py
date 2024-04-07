@@ -63,8 +63,7 @@ def index():
     # return the README.md content rendered as HTML
     with open("README.md", "r") as f:
         content = f.read()
-    html_content = markdown.markdown(content)
-    return html_content
+    return markdown.markdown(content)
 
 @app.route('/transcribe', methods=['GET'])
 def transcribe_video():
@@ -79,7 +78,7 @@ def summarize_video():
     messages = []
     default_system_message = "Summarize the text provided by the user"
     prompt = request.args.get('prompt')
-    if prompt and len(prompt) < 2000:
+    if prompt and len(prompt) < MAX_PROMPT_LENGTH:
         if moderated_text_OK(prompt):
             messages.append({"role": "system", "content": prompt})
         else:

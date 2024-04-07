@@ -1,0 +1,38 @@
+openapi: 3.0.0
+info:
+  title: Video Transcript API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Get the README.md content rendered as HTML
+      responses:
+        '200':
+          description: The README.md content rendered as HTML
+  /transcribe:
+    get:
+      summary: Get the transcript of a YouTube video
+      parameters:
+        - in: query
+          name: video_url
+          schema:
+            type: string
+          required: true
+          description: The URL of the YouTube video to transcribe
+      responses:
+        '200':
+          description: The transcript of the YouTube video
+  /summarize:
+    get:
+      summary: Get the summarized transcript of a YouTube video
+      parameters:
+        - in: query
+          name: video_url
+          schema:
+            type: string
+          required: true
+          description: The URL of the YouTube video to summarize
+      responses:
+        '200':
+          description: The summarized transcript of the YouTube video
+          
