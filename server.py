@@ -74,8 +74,8 @@ def summarize_video():
     messages = []
     default_system_message = "Summarize the text provided by the user"
     prompt = request.args.get('prompt')
-    if prompt:
-        if len(prompt) < 2000 and moderated_text_OK(prompt):
+    if prompt and len(prompt) < 2000:
+        if moderated_text_OK(prompt):
             messages.append({"role": "system", "content": prompt})
         else:
             messages.append({"role": "system", "content": default_system_message})
