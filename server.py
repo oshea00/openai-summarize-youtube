@@ -54,41 +54,52 @@ def chat_completion_request(messages, tools=None, tool_choice=None, model=GPT_MO
         )
         return response
     except Exception as e:
-        print("Unable to generate ChatCompletion response")
-        print(f"Exception: {e}")
+        print(f"Unable to generate ChatCompletion response: {e}")
         return e
 
 @app.route('/')
 def index():
     # return the README.md content rendered as HTML
-    with open("README.md", "r") as f:
-        content = f.read()
-    return markdown.markdown(content)
+    try:
+        with open("README.md", "r") as f:
+            content = f.read()
+        return markdown.markdown(content)
+    except Exception as e:
+        print(f"Error reading README.md: {e}")
+        return "Usage: /transcribe?video_url=<YouTube video URL> or /summarize?video_url=<YouTube video URL>&prompt=<prompt>"
 
 @app.route('/transcribe', methods=['GET'])
 def transcribe_video():
-    video_url = request.args.get('video_url')
-    transcript = get_video_transcript(video_url)
-    return transcript
-
+    try:
+        video_url = request.args.get('video_url')
+        transcript = get_video_transcript(video_url)
+        return transcript
+    except Exception as e:
+        print(f"Error transcribing video: {e}")
+        return "Error transcribing video"
+    
 @app.route('/summarize', methods=['GET'])
 def summarize_video():
-    video_url = request.args.get('video_url')
-    transcript = get_video_transcript(video_url)
-    messages = []
-    default_system_message = "Summarize the text provided by the user"
-    prompt = request.args.get('prompt')
-    if prompt and len(prompt) < MAX_PROMPT_LENGTH:
-        if moderated_text_OK(prompt):
-            messages.append({"role": "system", "content": prompt})
+    try:
+        video_url = request.args.get('video_url')
+        transcript = get_video_transcript(video_url)
+        messages = []
+        default_system_message = "Summarize the text provided by the user"
+        prompt = request.args.get('prompt')
+        if prompt and len(prompt) < MAX_PROMPT_LENGTH:
+            if moderated_text_OK(prompt):
+                messages.append({"role": "system", "content": prompt})
+            else:
+                messages.append({"role": "system", "content": default_system_message})
         else:
             messages.append({"role": "system", "content": default_system_message})
-    else:
-        messages.append({"role": "system", "content": default_system_message})
-    messages.append({"role": "user", "content": transcript})
+        messages.append({"role": "user", "content": transcript})
 
-    summarized_text = summarize_text(messages)
-    return summarized_text
+        summarized_text = summarize_text(messages)
+        return summarized_text
+    except Exception as e:
+        print(f"Error summarizing video: {e}")
+        return "Error summarizing video"
 
 def summarize_text(messages):
     try:
